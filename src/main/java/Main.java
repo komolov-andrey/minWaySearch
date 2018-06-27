@@ -1,21 +1,43 @@
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
 
-        int[][] mas = {
-                {0, 0, 0, 1, 0},
-                {0, -1, -1, -1, 0},
-                {0, 0, 0, 0, 0},
-                {0, 0, 0, -1, 0},
-                {0, 0, 0, -1, 0},
-        };
+        Scanner scanner = new Scanner(System.in);
 
-        int n = 5;
+        int n;
+        System.out.print("Введите размерность: ");
+        n = scanner.nextInt();
+
+        int[][] mas = new int[n][n];
+
+        int enter=5;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                do {
+                    System.out.print("Введите эдемент (" + (i+1) + ", " + (j+1) + "): 0 - свободный путь, -1 - тупик: ");
+                    enter = scanner.nextInt();
+                }while ((enter != 0)&&(enter != -1));
+                mas[i][j] = enter;
+            }
+        }
+        System.out.println();
+
+        System.out.print("Введите первую координату точки входа (индексация с единицы): ");
+        int ind_f1 = scanner.nextInt() - 1;
+        System.out.print("Введите вторую координату точки входа (индексация с единицы): ");
+        int ind_f2 = scanner.nextInt() - 1;
+
+        System.out.print("Введите первую координату точки назначения (индексация с единицы): ");
+        int ind_fx1 = scanner.nextInt() - 1;
+        System.out.print("Введите вторую координату точки назначения (индексация с единицы): ");
+        int ind_fx2 = scanner.nextInt() - 1;
+        mas[ind_fx1][ind_fx2] = 1;
+
         int incr = 1;
-
         // Поиск 1 (finish)
-        // Xi, Xj - ее координаты
-        // потом 2, 3, ...
+        // Xi, Xj - ее координаты, потом 2, 3, ...
         int xi = 0, xj = 0;
         int ind_i = 0, ind_j = 0;
 
@@ -67,116 +89,105 @@ public class Main {
             }
         }while (flag0);
 
-        // Вывод
+        // Рисуем ***
+        int finish = mas[ind_f1][ind_f2];
+        String [][] masString = new String [n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                System.out.print(mas[i][j] + "\t");
+                masString[i][j] = mas[i][j] + "";
             }
-            System.out.println();
         }
-    }
-}
+        masString[ind_f1][ind_f2] = "O";
+        int tek = finish;
 
+        // координаты соседних точек
+        int ind_l1, ind_l2, ind_u1, ind_u2, ind_r1, ind_r2, ind_d1, ind_d2;
+        int k=0;
 
+        while ((tek!=2)) {
 
-
-
-
-
-
-        /*
-        // координаты внутреннего квадрата
-        int is = fi, js = fj;
-        int im = fi, jm = fj;
-        boolean left = true, down = true, right = true, up = true;
-
-        boolean repeat = true;
-
-        do {
-            is = is - 1;
-            js = js - 1;
-            im = im + 1;
-            jm = jm + 1;
-
-
-            if (is < 0) {
-                is = 0;
-                up = false;
-            }
-            if (js < 0) {
-                js = 0;
-                left = false;
-            }
-            if (im >= n) {
-                im = n - 1;
-                down = false;
-            }
-            if (jm >= m) {
-                jm = m - 1;
-                right = false;
+            if (k>999){
+                System.out.println("Нет пути!\n");
+                break;
             }
 
-            repeat = true;
-            int repeatCount = 0;
+            ind_l1 = ind_f1;
+            ind_l2 = ind_f2-1;
+            ind_u1 = ind_f1-1;
+            ind_u2 = ind_f2;
+            ind_r1 = ind_f1;
+            ind_r2 = ind_f2+1;
+            ind_d1 = ind_f1+1;
+            ind_d2 = ind_f2;
 
-            while (repeat) {
-                // замены элементов
-                for (int iv = is; iv <= im; iv++) {
-                    for (int jv = js; jv <= jm; jv++) {
-                        if (mas[iv][jv] == 0) {
-                            if (iv != im) { // не последняя строка
-                                if (jv != jm) { // не последний столбец
-                                    if ((mas[iv][jv] < mas[iv][jv + 1]) && (mas[iv][jv + 1] != -1))
-                                        mas[iv][jv] = mas[iv][jv + 1] + 1;
-                                    if ((mas[iv][jv] < mas[iv + 1][jv]) && (mas[iv + 1][jv] != -1))
-                                        mas[iv][jv] = mas[iv + 1][jv] + 1;
-                                } else { // последний столбец
-                                    if ((mas[iv][jv] < mas[iv][jv - 1]) && (mas[iv][jv - 1] != -1))
-                                        mas[iv][jv] = mas[iv][jv - 1] + 1;
-                                    if ((mas[iv][jv] < mas[iv + 1][jv]) && (mas[iv + 1][jv] != -1))
-                                        mas[iv][jv] = mas[iv + 1][jv] + 1;
-                                }
-                            } else { // последняя строка
-                                if (jv != jm) { // не последний столбец
-                                    if ((mas[iv][jv] < mas[iv][jv + 1]) && (mas[iv][jv + 1] != -1))
-                                        mas[iv][jv] = mas[iv][jv + 1] + 1;
-                                    if ((mas[iv][jv] < mas[iv - 1][jv]) && (mas[iv - 1][jv] != -1))
-                                        mas[iv][jv] = mas[iv - 1][jv] + 1;
-                                } else { // последний столбец
-                                    if ((mas[iv][jv] < mas[iv][jv - 1]) && (mas[iv][jv - 1] != -1))
-                                        mas[iv][jv] = mas[iv][jv - 1] + 1;
-                                    if ((mas[iv][jv] < mas[iv - 1][jv]) && (mas[iv - 1][jv] != -1))
-                                        mas[iv][jv] = mas[iv - 1][jv] + 1;
-                                }
-                            }
-                        }
-                        //System.out.print(mas[iv][jv] + "\t");
-                    }
-                    //System.out.println();
+            if (ind_l2 >= 0) {
+                if ((tek - mas[ind_l1][ind_l2]) == 1){
+                    masString[ind_l1][ind_l2] = "*";
+                    tek = mas[ind_l1][ind_l2];
+                    ind_f1 = ind_l1;
+                    ind_f2 = ind_l2;
+                    continue;
                 }
-                repeat = false;
-                for (int iv = is; iv <= im; iv++) {
-                    for (int jv = js; jv <= jm; jv++) {
-                        if (mas[iv][jv] == 0) {
-                            repeat = true;
+            }
+            if (ind_u1 >= 0) {
+                if ((tek - mas[ind_u1][ind_u2]) == 1){
+                    masString[ind_u1][ind_u2] = "*";
+                    tek = mas[ind_u1][ind_u2];
+                    ind_f1 = ind_u1;
+                    ind_f2 = ind_u2;
+                    continue;
+                }
+            }
+            if (ind_r2 < n) {
+                if ((tek - mas[ind_r1][ind_r2]) == 1){
+                    masString[ind_r1][ind_r2] = "*";
+                    tek = mas[ind_r1][ind_r2];
+                    ind_f1 = ind_r1;
+                    ind_f2 = ind_r2;
+                    continue;
+                }
+            }
+            if (ind_d1 < n) {
+                if ((tek - mas[ind_d1][ind_d2]) == 1){
+                    masString[ind_d1][ind_d2] = "*";
+                    tek = mas[ind_d1][ind_d2];
+                    ind_f1 = ind_d1;
+                    ind_f2 = ind_d2;
+                    continue;
+                }
+            }
+            k++;
+        }
+
+        if (k <= 999) {
+
+            // замена символами
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    // замена -1 на #, 1 на Х, ост на .
+                    if (masString[i][j].equals("-1")) {
+                        masString[i][j] = "#";
+                    }else {
+                        if (masString[i][j].equals("1")) {
+                            masString[i][j] = "X";
+                        } else {
+                            if (masString[i][j].equals("O")) continue;
+                            if (!masString[i][j].equals("*")) masString[i][j] = ".";
                         }
                     }
                 }
-                repeatCount++;
-                System.out.println(repeatCount);
-                if (repeatCount > 25) break;
             }
-        }while (left || down || right || up) ;
-
-
-        // Вывод
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                System.out.print(mas[i][j] + "\t");
-            }
+            //вывод
             System.out.println();
-        }
+            System.out.print("# - тупик, 0 - вход, Х - выход, * кротчайший путь:\n");
 
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    System.out.print(masString[i][j] + "\t");
+                }
+                System.out.println();
+            }
+        }
     }
+
 }
-*/
